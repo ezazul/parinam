@@ -1,40 +1,6 @@
 <?php
 	session_start();
-	function fetch_result(){
-		
-	}
-	function fetch_student(){
-		require 'include/db.php';
-		$sql = "SELECT * FROM student WHERE department = '".$_SESSION['t_dep']."'";
-		$result = mysqli_query($conn, $sql);
-
-		if(!$result){
-			echo(mysqli_error($conn));
-		}
-		else{
-			$i = 1;
-			while($row = mysqli_fetch_assoc($result)){
-				echo '
-					<tr>
-					  <td>'.$i++.'</td>
-					  <td>'.$row['name'].'</td>
-					  <td>'.$row['semester'].' Sem</td>
-					  <td>
-						<a href="result.php?sem=1&email='.$row['email'].'" >1st sem </a><br>
-						<a href="result.php?sem=2&email='.$row['email'].'" >2nd sem </a><br>
-						<a href="result.php?sem=3&email='.$row['email'].'" >3rd sem</a><br />
-						<a href="result.php?sem=4&email='.$row['email'].'" >4th sem</a><br />
-						<a href="result.php?sem=5&email='.$row['email'].'" >5th sem</a><br />
-						<a href="result.php?sem=6&email='.$row['email'].'" >6th sem</a><br />
-						<a href="result.php?sem=7&email='.$row['email'].'" >7th sem</a><br />
-						<a href="result.php?sem=8&email='.$row['email'].'" >8th sem</a><br />
-						</td>
-					  <td><a href="compose.php"><big><font color="blue" size="5"><i class=" md-add-box" title="Click Here For New Result"></i></font></a></td>
-					</tr>
-				';
-			}
-		}
-	}
+	require "include/db.php";
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +67,7 @@
                              <div class="col-sm-12">
                                  
 
-                                 <h4 class="page-title">Student / <small>Filter List </small></h4>
+                                 <h4 class="page-title">Student / <small>Reports </small></h4>
                                  <p class="text-muted page-title-alt"> </p>
                              </div>
                          </div>
@@ -123,9 +89,10 @@
                                          </div>
 <div class="col-sm-5">
                                              <h4 class="header-title m-t-0"> <select class="form-control"   /> 
-											 <option >Select Semester</option>
-											 <option value="1">1st Sem</option>
-											 <option value="2">2nd Sem</option>
+											 <option >All</option>
+											 <option value="pending">Pending</option>
+											 <option value="approved">Approved</option>
+											 <option value="reject">Rejected</option>
 											 </select></h4>
                                           
                                          </div>
@@ -137,19 +104,37 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Sr. No.</th>
-      <th>Student Name</th>
-      <th>Semester</th>
-      <th>Result</th>
-      <th>Create New Result</th>
+      <th width="8%" valign="top">Sr. No.</th>
+      <th width="22%" valign="top">Student Name</th>
+      <th width="10%" valign="top">Semester</th>
+      <th width="22%" valign="top">Subject</th>
+      <th width="18%" valign="top">Action</th>
       
     </tr>
   </thead>
   <tbody>
-    <?php
-		fetch_student();
-	
+	<?php
+		
+		$sql = "select reports.* from reports,subject,teachers where teachers.email=subject.teacher_id and reports.subject_id=subject.sub_id and teachers.email= '".$_SESSION['t_email']."';";
+		$result = mysqli_query($conn, $sql);
+		$i = 1;
+		while($row = mysqli_fetch_assoc($result) ){
+			echo "
+				<tr>
+				  <td>$i</td>
+				  <td>".$row['student_id']."</td>
+				  <td>".$row['semester']."</td>
+				  <td>".$row['subject_id']."</td>
+				  <td>
+				  <button class=\"btn btn-danger btn-rounded waves-effect waves-light\">Reject</button> &nbsp;&nbsp;
+				  <a href='update_result.php?email=".$row['student_id']."&sem=".$row['semester']."&sub_id=".$row['subject_id']."' class=\"btn btn-success btn-rounded waves-effect waves-light\">Update</a>
+				  </td>
+				</tr>
+			";
+		}
+		
 	?>
+ 
 
   </tbody>
 </table>

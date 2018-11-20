@@ -77,3 +77,31 @@ function compose_result(){
 	});
 	return false;
 }
+function update_result(){
+	$.ajax({
+		url : "configuration/update_marks.php",
+		method : "GET",
+		data : $("#compose_form").serialize(),
+		success : function(data){
+			if(data == "Ok"){
+				alert("Marks successfully updated.");
+				window.location = "compose.php";
+			}
+			else{
+				alert(data);
+			}
+		}
+	});
+	return false;
+}
+
+function recheck(email, id, semester){
+	
+	$.ajax({
+		url : "configuration/recheck.php?email="+email+"&id="+id+"&sem="+semester ,
+		method : "GET",
+		success: function(data){
+			alert(data);
+		}
+	});
+}
